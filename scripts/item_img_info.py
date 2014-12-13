@@ -19,7 +19,7 @@ import cv2
 def get_item_img_info(url):
     # get item image from amazon
     t_start = time.time()
-    while time.time() - t_start < 10:
+    while time.time() - t_start < 20:
         r = requests.get(url)
         if r.status_code == 200:
             break
@@ -33,24 +33,27 @@ def get_item_img_info(url):
     r = requests.get(img_url)
     img = Image.open(StringIO(r.content))
     img = np.array(img)
-    img = img[:, :, ::-1].copy()
+    img_org = img[:, :, ::-1].copy()
 
     # get contour
-    imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    imgray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     imgray = cv2.GaussianBlur(imgray, (9, 9), 0)
     ret, thresh = cv2.threshold(imgray, 0, 255,
             cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
     contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     img_with_contours = img.copy()
-    cv2.drawContours(img_with_contours, contours, -1, (0, 255, 0), 1)
-    # debugging
-    cv2.imshow('with contours', img_with_contours)
-    cv2.waitKey()
+    cv2.drawContours(img_with_contours, [contours[0]], -1, (0, 255, 0), 1)
+    x, y, w, h = cv2.boundingRect(contours[0])
+    crop = img[y:y+h, x:x+w]
+    crop = cv2.cvtColor(crop, cv2.COLOR_RGB2RGBA)
+    cv2.imwrite('ignore/crop.png', crop)
 
     # debugging
-    cv2.imwrite('ignore/original.png', img)
-    cv2.imshow('original', img)
+    cv2.imshow('cropped', crop)
+    cv2.imshow('with contours', img_with_contours)
+    cv2.imshow('original', img_org)
     cv2.waitKey()
+    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

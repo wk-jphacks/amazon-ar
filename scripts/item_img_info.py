@@ -33,10 +33,11 @@ def get_item_img_info(url):
     r = requests.get(img_url)
     img = Image.open(StringIO(r.content))
     img = np.array(img)
+    img = img[:, :, ::-1].copy()
 
     # get contour
-    imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(imgray, 127, 255, 0)
+    imgray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    ret, thresh = cv2.threshold(imgray, 100, 255, 0)
     contours, hierarchy = cv2.findContours(thresh,
             cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     img_with_contour = img.copy()
@@ -53,7 +54,7 @@ if __name__ == '__main__':
     if len(sys.argv) >= 2:
         url = sys.argv[1]
     else:
-        url = 'http://www.amazon.co.jp/A4%E6%9B%B8%E6%A3%9A-A4%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E5%B0%82%E7%94%A8%E6%9B%B8%E6%A3%9A-5%E6%AE%B5-%E3%83%9B%E3%83%AF%E3%82%A4%E3%83%88-59009/dp/B005J1MKJY/ref=sr_1_15?s=home&ie=UTF8&qid=1418437401&sr=1-15'
+        url = 'http://www.amazon.co.jp/%E4%B8%8D%E4%BA%8C%E8%B2%BF%E6%98%93-%E3%83%A9%E3%83%83%E3%82%AF-BOOK-%E3%83%96%E3%83%A9%E3%82%A6%E3%83%B3-81398/dp/B0034G4HL0/ref=sr_1_8?s=home&ie=UTF8&qid=1418455551&sr=1-8&keywords=%E6%A3%9A'
 
     get_item_img_info(url=url)
 

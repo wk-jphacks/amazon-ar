@@ -49,11 +49,11 @@ def get_item_img_info(url):
     cv2.imwrite('ignore/crop.png', crop)
 
     # debugging
-    cv2.imshow('cropped', crop)
-    cv2.imshow('with contours', img_with_contours)
-    cv2.imshow('original', img_org)
-    cv2.waitKey()
-    cv2.destroyAllWindows()
+    # cv2.imshow('cropped', crop)
+    # cv2.imshow('with contours', img_with_contours)
+    # cv2.imshow('original', img_org)
+    # cv2.waitKey()
+    # cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':

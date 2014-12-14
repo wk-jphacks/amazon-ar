@@ -109,6 +109,7 @@ class ItemInfo(object):
         side_img[:] = color
 
         # save img
+        front = front[::-1, :].copy()
         self.front_img = front
         self.side_img = side_img
 

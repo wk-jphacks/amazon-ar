@@ -25,7 +25,7 @@
     <script>
 
     var DEBUG = true;  //for JSARToolKit built-in debugging info
-    var threshold = 180;
+    var threshold = 237;
     var markerScale = 120;
 
     function checkWebGl() {

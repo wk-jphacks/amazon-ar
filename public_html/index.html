@@ -296,41 +296,34 @@
 
                         // // get data from url parameter
                         var url = purl();
-                        var image1 = url.param('image1');
-                        var image2 = url.param('image2');
-                        var image3 = url.param('image3');
-                        var image4 = url.param('image4');
-                        var image5 = url.param('image5');
-                        var image6 = url.param('image6');
-
+                        var sha = url.param('sha');
+                        sha = 'hoge';
                         var height = url.param('height');
                         var width = url.param('width');
                         var depth = url.param('depth');
 
-                        // // for six images (1)
+                        var front_index = 0;
+
+                        // // for six images
                         var images = [];
                           for( var i = 0; i < 6; i++ ) {
+
+                            var image_path = 'img/' + sha + '_';
+
+                            if (i == front_index) {
+                                image_path += 'front.png';
+                            } else {
+                                image_path += 'side.png';
+                            }
+
                             images[i] = new THREE.MeshBasicMaterial( {
-                              map:THREE.ImageUtils.loadTexture('res/image' + (i + 1) + '.jpg', {}, function() {renderer.render(scene, camera);})
+                                map:THREE.ImageUtils.loadTexture(image_path),
+                                side: THREE.BackSide,
+                                wireframe: false
                             } );
                           }
 
                         var material = new THREE.MeshFaceMaterial(images);
-
-
-                        // for six images (2)
-
-                        // var materials =
-                        // [
-                        //     new THREE.MeshLambertMaterial({map:THREE.ImageUtils.loadTexture('res/image1.jpg')}),
-                        //     new THREE.MeshLambertMaterial({map:THREE.ImageUtils.loadTexture('res/image2.jpg')}),
-                        //     new THREE.MeshLambertMaterial({map:THREE.ImageUtils.loadTexture('res/image3.jpg')}),
-                        //     new THREE.MeshLambertMaterial({map:THREE.ImageUtils.loadTexture('res/image4.jpg')}),
-                        //     new THREE.MeshLambertMaterial({map:THREE.ImageUtils.loadTexture('res/image5.jpg')}),
-                        //     new THREE.MeshLambertMaterial({map:THREE.ImageUtils.loadTexture('res/image6.jpg')})
-                        // ];
-
-                        // var material = new THREE.MeshFaceMaterial(materials);
 
                         // for one image
                         // var material = new THREE.MeshBasicMaterial( {
@@ -338,6 +331,9 @@
                         // });
 
                         // Add the marker models and suchlike into your marker root object.
+                        height = 136;
+                        width = 136;
+                        depth = 136;
                         var geometry = new THREE.CubeGeometry(width, height, depth);
 
                         var cube = new THREE.Mesh(geometry, material);

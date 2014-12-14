@@ -5,6 +5,7 @@
     <meta charset="UTF-8"/>
 
     <link href='http://fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
+    <!-- <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css" /> -->
     <link rel="stylesheet" href="./css/style.css">
 
     <!--load helper libraries-->
@@ -137,7 +138,7 @@
 
 
 
-        var img = $('#mainImage')[0];
+        // var img = $('#mainImage')[0];
         var source;
         source = video;
         // var sourceId = 0;
@@ -378,90 +379,32 @@
 </head>
 <body>
     <h2>Three.js and JSARToolKit</h2>
+    <div class="container" id="threejs-container">
+      <div class="caption">three.js &lt;canvas&gt;</div>
+    </div>
+    <div class="container" id="qr-code">
+      <div class="caption">QR code</div>
+      <img src="img/<?echo $_GET['sha'];?>_qr.png" />
+    </div>
     <div class="container" id="video-container">
-        <div class="caption">&lt;video&gt;</div>
-        <video id="mainVideo" width="640" height="480" autoplay="autoplay" muted="true"></video>
+      <div class="caption">&lt;video&gt;</div>
+      <video id="mainVideo" width="640" height="480" autoplay="autoplay" muted="true"></video>
     </div>
-    <div class="container" id="image-container">
-        <div class="caption">&lt;image&gt;</div>
-        <img id="mainImage" width="640" height="480">
-    </div>
+    <!-- <div class="container" id="image&#45;container"> -->
+    <!--   <div class="caption">&#38;lt;image&#38;gt;</div> -->
+    <!--   <img id="mainImage" width="640" height="480"> -->
+    <!-- </div> -->
     <div class="container" id="canvas-container">
-        <div class="caption">&lt;canvas&gt;</div>
-        <canvas id="mainCanvas" width="640" height="480"></canvas>
+      <div class="caption">&lt;canvas&gt;</div>
+      <canvas id="mainCanvas" width="640" height="480"></canvas>
     </div>
     <div class="caption" style="margin: 2em auto;">
-        Threshold (0-255):
-        <input id="thresholdInput" type="range" min="0" max="255" style="vertical-align:middle;">
+      Threshold (0-255):
+      <input id="thresholdInput" type="range" min="0" max="255" style="vertical-align:middle;">
     </div>
     <div class="container" id="debugCanvas-container">
-        <div class="caption">debug &lt;canvas&gt;</div>
-        <canvas id="debugCanvas" width="640" height="480"></canvas>
+      <div class="caption">debug &lt;canvas&gt;</div>
+      <canvas id="debugCanvas" width="640" height="480"></canvas>
     </div>
-    <div class="container" id="threejs-container">
-        <div class="caption">three.js &lt;canvas&gt;</div>
-    </div>
-    <!--
-    <div id="container"></div>
-    <script src="http://www.html5canvastutorials.com/libraries/three.min.js"></script>
-    <script defer="defer">
-      // revolutions per second
-      var angularSpeed = 0.2;
-      var lastTime = 0;
-
-      // this function is executed on each animation frame
-      function animate(){
-        // update
-        var time = (new Date()).getTime();
-        var timeDiff = time - lastTime;
-        var angleChange = angularSpeed * timeDiff * 2 * Math.PI / 1000;
-        cube.rotation.y += angleChange;
-        lastTime = time;
-
-        // render
-        renderer.render(scene, camera);
-
-        // request new frame
-        requestAnimationFrame(function(){
-            animate();
-        });
-      }
-
-      // renderer
-      var renderer = new THREE.WebGLRenderer();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      document.body.appendChild(renderer.domElement);
-
-      // camera
-      var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
-      camera.position.z = 500;
-
-      // scene
-      var scene = new THREE.Scene();
-
-      // material
-      var material = new THREE.MeshLambertMaterial({
-        map: THREE.ImageUtils.loadTexture('res/image1.jpg')
-      });
-
-      // cube
-      var cube = new THREE.Mesh(new THREE.CubeGeometry(200, 200, 200), material);
-      cube.overdraw = true;
-      cube.rotation.x = Math.PI * 0.1;
-      scene.add(cube);
-
-      // add subtle ambient lighting
-      var ambientLight = new THREE.AmbientLight(0xbbbbbb);
-      scene.add(ambientLight);
-
-      // directional lighting
-      var directionalLight = new THREE.DirectionalLight(0xffffff);
-      directionalLight.position.set(1, 1, 1).normalize();
-      scene.add(directionalLight);
-
-      // start animation
-      animate();
-    </script>
-    -->
 </body>
 </html>

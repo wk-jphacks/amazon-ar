@@ -133,10 +133,7 @@ def main():
     size_info = item_info.get_size_info()
     front, side = item_info.get_item_img()
 
-    # import urllib
-    # url = urllib.unquote(url)
     img_nm = hashlib.md5(url).hexdigest()
-    print img_nm
     cv2.imwrite('/home/ubuntu/amazon-ar/img/{0}_front.png'.format(img_nm), front)
     cv2.imwrite('/home/ubuntu/amazon-ar/img/{0}_side.png'.format(img_nm), side)
     with open('/home/ubuntu/amazon-ar/img/{0}_size.csv'.format(img_nm), 'w') as f:

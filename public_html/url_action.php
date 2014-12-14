@@ -1,10 +1,16 @@
 <?php
+// url
 $url = $_GET['url'];
-/*$width = $_GET['width'];
-$height = $_GET['height'];
-$depth = $_GET['depth'];*/
-
-//system("python ../scripts/get_image.py $url");
-$img = sha1($url) . '.png';
-
-header("Location: index.html?img=$img&width=$width&height=$height&depth=$depth");
+// img processing
+exec("python /home/ubuntu/amazon-ar/scripts/item_info.py \"$url\"");
+// get item size
+$img_nm = md5($url);
+$f = fopen('img/'.$img_nm.'_size.csv', 'r');
+$size_txt = fread($f, filesize('img/'.$img_nm.'_size.csv'));
+$pieces = explode(",", $size_txt);
+$width = floatval($pieces[0]);
+$depth = floatval($pieces[1]);
+$height = floatval($pieces[2]);
+fclose($f);
+// redirect
+header("Location: index.html?sha=$img_nm&width=$width&height=$height&depth=$depth");

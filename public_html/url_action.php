@@ -13,7 +13,7 @@ $depth = floatval($pieces[1]);
 $height = floatval($pieces[2]);
 fclose($f);
 # generate qr code
-$ar_url = "http://amazon-ar.ddo.jp/?sha=$img_nm&width=$width&height=$height&depth=$depth";
+$ar_url = "http://amazon-ar.ddo.jp/ar/?sha=$img_nm&width=$width&height=$height&depth=$depth";
 exec("qr \"$ar_url\" > img/".$img_nm."_qr.png");
 // redirect
 header("Location: $ar_url");

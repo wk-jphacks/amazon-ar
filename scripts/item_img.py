@@ -46,9 +46,11 @@ def get_item_img_info(url):
     x, y, w, h = cv2.boundingRect(contours[0])
     crop = img[y:y+h, x:x+w]
     crop = cv2.cvtColor(crop, cv2.COLOR_RGB2RGBA)
-    cv2.imwrite('ignore/crop.png', crop)
+    crop = cv2.cvtColor(crop, cv2.COLOR_RGBA2BGRA)
+    crop[crop.sum(axis=-1)>950] = [255,255,255,0]
 
     # debugging
+    cv2.imwrite('ignore/cropped.png', crop)
     # cv2.imshow('cropped', crop)
     # cv2.imshow('with contours', img_with_contours)
     # cv2.imshow('original', img_org)

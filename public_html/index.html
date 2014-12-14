@@ -11,29 +11,45 @@
       margin-left: auto;
       margin-right: auto;
     }
+    @media (max-width:480px) {
+      .a {
+        height: 30px;
+        padding: 5px 10px;
+        font-size: 12px;
+        line-height: 1.5;
+        border-radius: 3px;
+        padding-right: 0;
+      }
+      .b {
+        padding: 5px 10px;
+        font-size: 12px;
+        line-height: 1.5;
+        border-radius: 3px;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-xs-1"></div>
-      <div class="col-xs-10">
+      <div class="col-md-1"></div>
+      <div class="col-md-10">
         <img src="/assets/img/amazon-ar-logo.png" class="img-responsive center-block" style="margin-top:15%"/>
         <!-- form >> -->
         <form class="" role="form" method="GET" action="url_action.php">
           <div class="row" style="margin-top:50px">
-            <div class="col-xs-11" style="padding-right:5px">
-              <input type="url" class="form-control" id="amazonItemUrl" name="url" placeholder="Enter amazon URL" />
+            <div class="col-sm-11 col-xs-10" style="padding-right:0">
+              <input type="url" class="form-control a" id="amazonItemUrl" name="url" placeholder="Enter amazon URL" />
             </div>
-            <div class="col-xs-1" style="padding-left:5px">
-              <button type="submit" class="btn btn-primary">Go</button>
+            <div class="col-sm-1 col-xs-2" style="padding-left:4px">
+              <button type="submit" class="btn btn-primary b">Go</button>
             </div>
           </div>
         </form>
         <!-- << form -->
       </div>
-      <div class="col-xs-1"></div>
+      <div class="col-md-1"></div>
     </div>
   </div>
 </body>

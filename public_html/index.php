@@ -4,6 +4,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Amazon - AR</title>
 </head>
 
 <?php?>

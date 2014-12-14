@@ -297,14 +297,14 @@
                         // // get data from url parameter
                         var url = purl();
                         var sha = url.param('sha');
-                        sha = 'hoge';
+                        sha = 'hoge'; // for debugging
                         var height = url.param('height');
                         var width = url.param('width');
                         var depth = url.param('depth');
 
-                        var front_index = 0;
+                        var front_index = 3;
 
-                        // // for six images
+                        // for six images
                         var images = [];
                           for( var i = 0; i < 6; i++ ) {
 
@@ -331,13 +331,16 @@
                         // });
 
                         // Add the marker models and suchlike into your marker root object.
-                        height = 136;
-                        width = 136;
-                        depth = 136;
-                        var geometry = new THREE.CubeGeometry(width, height, depth);
+                        height = 89; // for debugging
+                        width = 59; // for debugging
+                        depth = 29.5; // for debugging
+                        height_mm = height * 10;
+                        width_mm = width * 10;
+                        depth_mm = depth * 10;
+                        var geometry = new THREE.CubeGeometry(width_mm, depth_mm, height_mm);
 
                         var cube = new THREE.Mesh(geometry, material);
-                        cube.position.z = -height/2;
+                        cube.position.z = -height_mm/2;
                         markerRoot.add(cube);
 
                         // Add the marker root to your scene.

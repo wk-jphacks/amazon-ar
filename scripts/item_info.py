@@ -4,6 +4,7 @@
 # author: Kentaro Wada <www.kentaro.wada@gmail.com>
 import re
 import time
+import sha
 from StringIO import StringIO
 
 import requests
@@ -92,20 +93,25 @@ class ItemInfo(object):
         cv2.drawContours(img_with_contours, [contours[0]], -1, (0, 255, 0), 1)
         # crop img
         x, y, w, h = cv2.boundingRect(contours[0])
-        crop = img[y:y+h, x:x+w]
-        crop = cv2.cvtColor(crop, cv2.COLOR_RGB2RGBA)
-        crop = cv2.cvtColor(crop, cv2.COLOR_RGBA2BGRA)
-        crop[crop.sum(axis=-1)>950] = [255,255,255,0]
+        front = img[y:y+h, x:x+w]
+        front = cv2.cvtColor(front, cv2.COLOR_RGB2RGBA)
+        front = cv2.cvtColor(front, cv2.COLOR_RGBA2BGRA)
+        front[front.sum(axis=-1)>950] = [255,255,255,0]
 
         # other side color
-        color = crop.mean(axis=0).mean(axis=0)
-        color_test = np.zeros_like(crop)
-        color_test[:] = color
-        cv2.imshow('color test', color_test)
+        color = front.mean(axis=0).mean(axis=0)
+        side_img = np.zeros_like(front)
+        side_img[:] = color
+
+        # save img
+        img_nm = sha.sha(self.url).hexdigest()
+        cv2.imwrite('ignore/{0}_front.png'.format(img_nm), front)
+        cv2.imwrite('ignore/{0}_side.png'.format(img_nm), side_img)
 
         # debugging
-        cv2.imwrite('ignore/cropped.png', crop)
-        # cv2.imshow('cropped', crop)
+        cv2.imshow('side', side_img)
+        cv2.imshow('front', front)
+
         # cv2.imshow('with contours', img_with_contours)
         # cv2.imshow('original', img_org)
         cv2.waitKey()

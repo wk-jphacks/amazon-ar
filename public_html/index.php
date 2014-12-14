@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>IFC - JSARToolKit</title>
+    <title>Amazon - AR</title>
     <meta charset="UTF-8"/>
 
     <link href='http://fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
     <!-- <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css" /> -->
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
 
     <!--load helper libraries-->
-    <script type="text/javascript" src="./js/jquery-2.0.2.min.js"></script>
-    <script type="text/javascript" src="./js/purl.js"></script>
+    <script type="text/javascript" src="./assets/js/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="./assets/js/purl.js"></script>
 
     <!--load 3D libraries-->
-    <script type="text/javascript" src="./js/three.min.js"></script>
-    <script type="text/javascript" src="./js/Detector.js"></script>
-    <script type="text/javascript" src="./js/stats.min.js"></script>
+    <script type="text/javascript" src="./assets/js/three.min.js"></script>
+    <script type="text/javascript" src="./assets/js/Detector.js"></script>
+    <script type="text/javascript" src="./assets/js/stats.min.js"></script>
 
     <!--load AR library-->
-    <script type="text/javascript" src="./js/JSARToolKit.min.js"></script>
+    <script type="text/javascript" src="./assets/js/JSARToolKit.min.js"></script>
 
     <!-- <script src="./js/magi.js"></script> -->
     <!-- <script src="./js/utils.js"></script> -->
@@ -378,24 +378,24 @@
     </script>
 </head>
 <body>
-    <h2>Three.js and JSARToolKit</h2>
+    <h2>Amazon - AR</h2>
     <div class="container" id="threejs-container">
-      <div class="caption">three.js &lt;canvas&gt;</div>
+      <div class="caption">Life with AR</div>
     </div>
     <div class="container" id="qr-code">
       <div class="caption">QR code</div>
-      <img src="img/<?echo $_GET['sha'];?>_qr.png" />
+      <img src="img/<?echo $_GET['sha'];?>_qr.png" style="display:block;margin-left:auto;margin-right:auto;"/>
     </div>
-    <div class="container" id="video-container">
-      <div class="caption">&lt;video&gt;</div>
+    <!-- <div class="container" id="video&#45;container"> -->
+      <!-- <div class="caption">&#38;lt;video&#38;gt;</div> -->
       <video id="mainVideo" width="640" height="480" autoplay="autoplay" muted="true"></video>
-    </div>
+    <!-- </div> -->
     <!-- <div class="container" id="image&#45;container"> -->
     <!--   <div class="caption">&#38;lt;image&#38;gt;</div> -->
     <!--   <img id="mainImage" width="640" height="480"> -->
     <!-- </div> -->
     <div class="container" id="canvas-container">
-      <div class="caption">&lt;canvas&gt;</div>
+      <div class="caption">Real</div>
       <canvas id="mainCanvas" width="640" height="480"></canvas>
     </div>
     <div class="caption" style="margin: 2em auto;">
@@ -403,7 +403,7 @@
       <input id="thresholdInput" type="range" min="0" max="255" style="vertical-align:middle;">
     </div>
     <div class="container" id="debugCanvas-container">
-      <div class="caption">debug &lt;canvas&gt;</div>
+      <div class="caption">Debug</div>
       <canvas id="debugCanvas" width="640" height="480"></canvas>
     </div>
 </body>

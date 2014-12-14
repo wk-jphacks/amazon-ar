@@ -105,17 +105,18 @@ class ItemInfo(object):
 
         # save img
         img_nm = sha.sha(self.url).hexdigest()
-        cv2.imwrite('ignore/{0}_front.png'.format(img_nm), front)
-        cv2.imwrite('ignore/{0}_side.png'.format(img_nm), side_img)
+        cv2.imwrite('../img/{0}_front.png'.format(img_nm), front)
+        cv2.imwrite('../img/{0}_side.png'.format(img_nm), side_img)
+        with open('../img/{0}_size.csv'.format(img_nm)) as f:
+            f.write(','.join(size_info))
 
         # debugging
-        cv2.imshow('side', side_img)
-        cv2.imshow('front', front)
-
+        # cv2.imshow('side', side_img)
+        # cv2.imshow('front', front)
         # cv2.imshow('with contours', img_with_contours)
         # cv2.imshow('original', img_org)
-        cv2.waitKey()
-        cv2.destroyAllWindows()
+        # cv2.waitKey()
+        # cv2.destroyAllWindows()
 
 
 def main():

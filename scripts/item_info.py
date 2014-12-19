@@ -144,7 +144,7 @@ def main():
     fpath = os.path.dirname(os.path.abspath(__file__))
     cv2.imwrite(fpath + '/../img/{0}_front.png'.format(img_nm), front)
     front_upside_down = front[::-1, :].copy()
-    cv2.imwrite(fpath + '/../img/{0}_front_upside_down.png'.format(img_nm), front)
+    cv2.imwrite(fpath + '/../img/{0}_front_upside_down.png'.format(img_nm), front_upside_down)
     cv2.imwrite(fpath + '/../img/{0}_side.png'.format(img_nm), side)
     with open(fpath + '/../img/{0}_size.csv'.format(img_nm), 'w') as f:
         f.write(','.join(map(str, size_info)))

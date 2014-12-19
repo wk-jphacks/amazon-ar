@@ -26,6 +26,13 @@
     var threshold = 237;
     var markerScale = 120;
 
+    // get data from url parameter
+    var url = purl();
+    var img = url.param('img');
+    var height = parseFloat(url.param('height'));
+    var width = parseFloat(url.param('width'));
+    var depth = parseFloat(url.param('depth'));
+
     function checkWebGl() {
         if (!Detector.webgl) {
             $('div').remove();
@@ -82,6 +89,10 @@
         checkWebGl();
 
         console.log('Document is ready.');
+
+        // QR Code
+        var qr_code = $('#qr_code img')[0];
+        qr_code.setAttribute('src', "/img/" + img);
 
         $('#thresholdInput').bind('input', function () {
             threshold = $(this).val();
@@ -293,14 +304,6 @@
                         markerRoot.matrixAutoUpdate = false;
                         markerRoots[currId] = markerRoot;
 
-                        // // get data from url parameter
-                        var url = purl();
-                        var sha = url.param('sha');
-                        // sha = '851d41421cb53636123b5dfc0fcb198c54ab3e8f'; // for debugging
-                        var height = parseFloat(url.param('height'));
-                        var width = parseFloat(url.param('width'));
-                        var depth = parseFloat(url.param('depth'));
-
                         var front_index = 3;
 
                         // for six images
@@ -380,9 +383,9 @@
     <div class="container" id="threejs-container">
       <div class="caption">Life with AR</div>
     </div>
-    <div class="container" id="qr-code">
+    <div class="container" id="qr_code">
       <div class="caption">QR code</div>
-      <img src="img/<?echo $_GET['sha'];?>_qr.png" style="display:block;margin-left:auto;margin-right:auto;"/>
+      <img style="display:block;margin-left:auto;margin-right:auto;"/>
     </div>
     <!-- <div class="container" id="video&#45;container"> -->
       <!-- <div class="caption">&#38;lt;video&#38;gt;</div> -->

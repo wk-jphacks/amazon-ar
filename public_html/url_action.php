@@ -2,7 +2,7 @@
 // url
 $url = $_GET['url'];
 // img processing
-exec('python ' . dirname(__FILE__) . '/scripts/item_info.py "$url"');
+exec('python ' . dirname(__FILE__) . "/../scripts/item_info.py '$url'");
 // get item size
 $img_nm = md5($url);
 $f = fopen('img/'.$img_nm.'_size.csv', 'r');

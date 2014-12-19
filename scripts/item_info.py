@@ -3,6 +3,7 @@
 # item_info_class.py
 # author: Kentaro Wada <www.kentaro.wada@gmail.com>
 import re
+import os
 import sys
 import time
 import hashlib
@@ -101,15 +102,19 @@ class ItemInfo(object):
             front = img.copy()
         front = cv2.cvtColor(front, cv2.COLOR_RGB2RGBA)
         front = cv2.cvtColor(front, cv2.COLOR_RGBA2BGRA)
-        # front[front.sum(axis=-1)>1000] = [255,255,255,0]
+
+        # transparent
+        front[front.sum(axis=-1)>1000] = [255,255,255,0]
 
         # other side color
         color = front.mean(axis=0).mean(axis=0)
         side_img = np.zeros_like(front)
         side_img[:] = color
 
+        # up-side-down
+        # front = front[::-1, :].copy()
+
         # save img
-        front = front[::-1, :].copy()
         self.front_img = front
         self.side_img = side_img
 
@@ -134,10 +139,14 @@ def main():
     size_info = item_info.get_size_info()
     front, side = item_info.get_item_img()
 
+    # save imgs
     img_nm = hashlib.md5(url).hexdigest()
-    cv2.imwrite('/home/ubuntu/amazon-ar/img/{0}_front.png'.format(img_nm), front)
-    cv2.imwrite('/home/ubuntu/amazon-ar/img/{0}_side.png'.format(img_nm), side)
-    with open('/home/ubuntu/amazon-ar/img/{0}_size.csv'.format(img_nm), 'w') as f:
+    fpath = os.path.dirname(os.path.abspath(__file__))
+    cv2.imwrite(fpath + '/../img/{0}_front.png'.format(img_nm), front)
+    front_upside_down = front[::-1, :].copy()
+    cv2.imwrite(fpath + '/../img/{0}_front_upside_down.png'.format(img_nm), front_upside_down)
+    cv2.imwrite(fpath + '/../img/{0}_side.png'.format(img_nm), side)
+    with open(fpath + '/../img/{0}_size.csv'.format(img_nm), 'w') as f:
         f.write(','.join(map(str, size_info)))
 
 

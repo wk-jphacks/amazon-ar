@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # item_info_class.py
 # author: Kentaro Wada <www.kentaro.wada@gmail.com>
-import re
 import os
 import sys
+import re
 import time
 import hashlib
 from StringIO import StringIO
@@ -40,6 +40,7 @@ class ItemInfo(object):
         return self.soup
 
     def get_size_info(self):
+        """size_info = width, depth, height"""
         def scrape_web4size(pattern):
             """scrape the web page corresponding with the each pattern
             in amazon web site"""
@@ -67,6 +68,9 @@ class ItemInfo(object):
             size_info = []
             for spl in size_text_splitted:
                 size_info.append(float(re.findall(r'\d+\.?\d*', spl)[0]))
+            # for just there is radius
+            if len(size_info) == 2:
+                size_info.append(size_info[0])
             return size_info
         # try each pattern
         for i in range(2):
@@ -128,6 +132,22 @@ class ItemInfo(object):
 
         return self.front_img, self.side_img
 
+    def predict_correct_size_info(self):
+        """size_info = width, depth, height"""
+        if self.front_img is None:
+            self.get_item_img()
+        if self.size_info is None:
+            self.get_size_info()
+        height, width, _ = self.front_img.shape
+        img_scaled_area = 1. * height / width * width
+        s1, s2, s3 = self.size_info
+        s1, s2, s3 = 1., 1.*s2/s1, 1.*s3/s1
+        scaled_areas = np.array([s1*s2, s2*s3, s3*s1])
+        depth_index = -1 + np.argmin(np.abs(scaled_areas - img_scaled_area))
+        depth = self.size_info.pop(depth_index)
+        self.size_info.insert(1, depth)
+        return self.size_info
+
 
 def main():
     if len(sys.argv) == 2:
@@ -138,6 +158,7 @@ def main():
     item_info = ItemInfo(url=url)
     size_info = item_info.get_size_info()
     front, side = item_info.get_item_img()
+    size_info = item_info.predict_correct_size_info()
 
     # save imgs
     img_nm = hashlib.md5(url).hexdigest()

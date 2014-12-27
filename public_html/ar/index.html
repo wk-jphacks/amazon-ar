@@ -23,8 +23,7 @@
     <script>
 
     var DEBUG = true;  //for JSARToolKit built-in debugging info
-    var threshold = 237;
-    var markerScale = 38;
+    var threshold = 180;
 
     // get data from url parameter
     var url = purl();
@@ -32,6 +31,7 @@
     var height = parseFloat(url.param('height'));
     var width = parseFloat(url.param('width'));
     var depth = parseFloat(url.param('depth'));
+    var markerSize = parseInt(url.param('msize'));
 
     function checkWebGl() {
         if (!Detector.webgl) {
@@ -168,7 +168,7 @@
 
         // The FLARMultiIdMarkerDetector is the actual detection engine for marker detection.
         // It detects multiple ID markers. ID markers are special markers that encode a number.
-        var detector = new FLARMultiIdMarkerDetector(param, markerScale);
+        var detector = new FLARMultiIdMarkerDetector(param, markerSize);
 
         // For tracking video set continue mode to true. In continue mode, the detector
         // tracks markers across multiple frames.

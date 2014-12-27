@@ -24,7 +24,7 @@
 
     var DEBUG = true;  //for JSARToolKit built-in debugging info
     var threshold = 237;
-    var markerScale = 120;
+    var markerScale = 38;
 
     // get data from url parameter
     var url = purl();
@@ -92,7 +92,7 @@
 
         // QR Code
         var qr_code = $('#qr_code img')[0];
-        qr_code.setAttribute('src', "/img/" + img);
+        qr_code.setAttribute('src', "/img/" + img + "_qr.png");
 
         $('#thresholdInput').bind('input', function () {
             threshold = $(this).val();

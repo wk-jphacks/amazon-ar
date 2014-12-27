@@ -147,20 +147,8 @@
 
 
 
-        // var img = $('#mainImage')[0];
         var source;
         source = video;
-        // var sourceId = 0;
-        // if (sourceId === 0) {
-        //     video.src = '../resources/markers/jsartoolkit/output_4.ogg';
-        //     source = video;
-        // } else if (sourceId === 1) {
-        //     video.src = '../resources/markers/jsartoolkit/swap_loop.ogg';
-        //     source = video;
-        // } else if (sourceId === 2) {
-        //     img.src = '../resources/markers/jsartoolkit/chalk_multi.jpg';
-        //     source = img;
-        // }
 
         //===================================================
         // INIT JSARTOOLKIT
@@ -327,15 +315,7 @@
 
                         var material = new THREE.MeshFaceMaterial(images);
 
-                        // for one image
-                        // var material = new THREE.MeshBasicMaterial( {
-                        //     map:THREE.ImageUtils.loadTexture('res/test.png')
-                        // });
-
                         // Add the marker models and suchlike into your marker root object.
-                        // height = 89; // for debugging
-                        // width = 59; // for debugging
-                        // depth = 29.5; // for debugging
                         height_mm = height * 10;
                         width_mm = width * 10;
                         depth_mm = depth * 10;
@@ -382,19 +362,12 @@
     <h2>Amazon - AR</h2>
     <div class="container" id="threejs-container">
       <div class="caption">Life with AR</div>
+      <video id="mainVideo" width="640" height="480" autoplay="autoplay" muted="true"></video>
     </div>
     <div class="container" id="qr_code">
       <div class="caption">QR code</div>
       <img style="display:block;margin-left:auto;margin-right:auto;"/>
     </div>
-    <!-- <div class="container" id="video&#45;container"> -->
-      <!-- <div class="caption">&#38;lt;video&#38;gt;</div> -->
-      <video id="mainVideo" width="640" height="480" autoplay="autoplay" muted="true"></video>
-    <!-- </div> -->
-    <!-- <div class="container" id="image&#45;container"> -->
-    <!--   <div class="caption">&#38;lt;image&#38;gt;</div> -->
-    <!--   <img id="mainImage" width="640" height="480"> -->
-    <!-- </div> -->
     <div class="container" id="canvas-container">
       <div class="caption">Real</div>
       <canvas id="mainCanvas" width="640" height="480"></canvas>

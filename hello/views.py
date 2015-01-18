@@ -2,24 +2,27 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 from .models import Greeting
+import item_info
 
 import requests
 
 
 # Create your views here.
 def index(request):
-    r = requests.get('http://httpbin.org/status/418')
-    print r.text
-    # return HttpResponse('Hello from Python!')
-    return HttpResponse('<pre>' + r.text + '</pre>')
+    return render(request, 'index.html')
 
+def get_item_info(request):
+    item_info.main(url)
 
-def db(request):
+def ar(request):
+    return HttpResponse('Hello AR')
 
-    greeting = Greeting()
-    greeting.save()
-
-    greetings = Greeting.objects.all()
-
-    return render(request, 'db.html', {'greetings': greetings})
+# def db(request):
+#
+#     greeting = Greeting()
+#     greeting.save()
+#
+#     greetings = Greeting.objects.all()
+#
+#     return render(request, 'db.html', {'greetings': greetings})
 

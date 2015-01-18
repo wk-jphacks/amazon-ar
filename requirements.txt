@@ -10,7 +10,7 @@ requests==2.3.0
 beautifulsoup4==4.3.2
 numpy==1.9.1
 Pillow==2.6.1
-scikit-image==0.10.1
 six==1.8.0
+scikit-image==0.10.1
 scipy==0.14.0
 qrcode==5.1

@@ -7,10 +7,10 @@ psycopg2==2.5.3
 static3==0.5.1
 wsgiref==0.1.2
 requests==2.3.0
+six==1.8.0
 beautifulsoup4==4.3.2
 numpy==1.9.1
 Pillow==2.6.1
-six==1.8.0
 scikit-image==0.10.1
 scipy==0.14.0
 qrcode==5.1

@@ -1,0 +1,16 @@
+Django==1.6.5
+dj-database-url==0.3.0
+dj-static==0.0.6
+django-toolbelt==0.0.1
+gunicorn==19.0.0
+psycopg2==2.5.3
+static3==0.5.1
+wsgiref==0.1.2
+requests==2.3.0
+six==1.8.0
+beautifulsoup4==4.3.2
+numpy==1.9.1
+Pillow==2.6.1
+scipy==0.14.0
+qrcode==5.1
+scikit-image==0.10.1

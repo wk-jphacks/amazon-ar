@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# item_info_class.py
-# author: Kentaro Wada <www.kentaro.wada@gmail.com>
+#
+
+__author__ = 'www.kentaro.wada@gmail.com (Kentaro Wada)'
+
+
+import sys;
+sys.path.insert(0, 'libs')
+
 import os
-import sys
 import re
 import time
 import hashlib
@@ -11,10 +16,11 @@ from StringIO import StringIO
 
 import requests
 from bs4 import BeautifulSoup
-
 import numpy as np
 from PIL import Image
-import cv2
+from skimage.io import imsave
+
+import only_object
 
 
 class ItemInfo(object):
@@ -87,48 +93,16 @@ class ItemInfo(object):
 
         # download & load img as numpy.array
         r = requests.get(img_url)
-        img = Image.open(StringIO(r.content))
-        img = np.array(img)
-        img_org = img[:, :, ::-1].copy()
+        img = np.asarray(Image.open(StringIO(r.content)))
 
-        # get contour
-        imgray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        imgray = cv2.GaussianBlur(imgray, (9, 9), 0)
-        ret, thresh = cv2.threshold(imgray, 0, 255,
-                cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        img_with_contours = img.copy()
-        cv2.drawContours(img_with_contours, [contours[0]], -1, (0, 255, 0), 1)
-        # crop img
-        x, y, w, h = cv2.boundingRect(contours[0])
-        front = img[y:y+h, x:x+w]
-        if front.size < img.size / 6.:
-            front = img.copy()
-        front = cv2.cvtColor(front, cv2.COLOR_RGB2RGBA)
-        front = cv2.cvtColor(front, cv2.COLOR_RGBA2BGRA)
-
-        # transparent
-        front[front.sum(axis=-1)>1000] = [255,255,255,0]
-
+        front = only_object.only_object(img)
         # other side color
         color = front.mean(axis=0).mean(axis=0)
         side_img = np.zeros_like(front)
         side_img[:] = color
-
-        # up-side-down
-        # front = front[::-1, :].copy()
-
         # save img
         self.front_img = front
         self.side_img = side_img
-
-        # debugging
-        # cv2.imshow('side', side_img)
-        # cv2.imshow('front', front)
-        # cv2.imshow('with contours', img_with_contours)
-        # cv2.imshow('original', img_org)
-        # cv2.waitKey()
-        # cv2.destroyAllWindows()
 
         return self.front_img, self.side_img
 
@@ -149,27 +123,25 @@ class ItemInfo(object):
         return self.size_info
 
 
-def main():
-    if len(sys.argv) == 2:
-        url = sys.argv[1]
-    else:
-        url = 'http://www.amazon.co.jp/%E4%B8%8D%E4%BA%8C%E8%B2%BF%E6%98%93-%E3%83%95%E3%83%AA%E3%83%BC%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9-FBC960-%E3%82%AB%E3%83%A9%E3%83%BC%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9-57093/dp/B00163JL6E/ref=sr_1_3?s=home&ie=UTF8&qid=1418455551&sr=1-3&keywords=%E6%A3%9A'
-
+def main(url):
     item_info = ItemInfo(url=url)
     size_info = item_info.get_size_info()
     front, side = item_info.get_item_img()
     size_info = item_info.predict_correct_size_info()
 
     # save imgs
-    img_nm = hashlib.md5(url).hexdigest()
+    img_nm = hashlib.md5(url.encode('utf-8')).hexdigest()
     fpath = os.path.dirname(os.path.abspath(__file__))
-    cv2.imwrite(fpath + '/../img/{0}_front.png'.format(img_nm), front)
+    imsave(fpath + '/item_img/{0}_front.png'.format(img_nm), front)
     front_upside_down = front[::-1, :].copy()
-    cv2.imwrite(fpath + '/../img/{0}_front_upside_down.png'.format(img_nm), front_upside_down)
-    cv2.imwrite(fpath + '/../img/{0}_side.png'.format(img_nm), side)
-    with open(fpath + '/../img/{0}_size.csv'.format(img_nm), 'w') as f:
-        f.write(','.join(map(str, size_info)))
+    imsave(fpath + '/item_img/{0}_front_upside_down.png'.format(img_nm), front_upside_down)
+    imsave(fpath + '/item_img/{0}_side.png'.format(img_nm), side)
+    # with open(fpath + '/item_img/{0}_size.csv'.format(img_nm), 'w') as f:
+    #     f.write(','.join(map(str, size_info)))
+
+    return size_info
 
 
 if __name__ == '__main__':
-    main()
+    url = 'http://www.amazon.co.jp/%E4%B8%8D%E4%BA%8C%E8%B2%BF%E6%98%93-%E3%83%95%E3%83%AA%E3%83%BC%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9-FBC960-%E3%82%AB%E3%83%A9%E3%83%BC%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9-57093/dp/B00163JL6E/ref=sr_1_3?s=home&ie=UTF8&qid=1418455551&sr=1-3&keywords=%E6%A3%9A'
+    main(url)

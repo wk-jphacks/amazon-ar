@@ -5,20 +5,19 @@
     <meta charset="UTF-8"/>
 
     <link href='http://fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
-    <!-- <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.min.css" /> -->
-    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/static/style.css">
 
     <!--load helper libraries-->
-    <script type="text/javascript" src="/assets/js/jquery-2.0.2.min.js"></script>
-    <script type="text/javascript" src="/assets/js/purl.js"></script>
+    <script type="text/javascript" src="/static/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="/static/purl.js"></script>
 
     <!--load 3D libraries-->
-    <script type="text/javascript" src="/assets/js/three.min.js"></script>
-    <script type="text/javascript" src="/assets/js/Detector.js"></script>
-    <script type="text/javascript" src="/assets/js/stats.min.js"></script>
+    <script type="text/javascript" src="/static/three.min.js"></script>
+    <script type="text/javascript" src="/static/Detector.js"></script>
+    <script type="text/javascript" src="/static/stats.min.js"></script>
 
     <!--load AR library-->
-    <script type="text/javascript" src="/assets/js/JSARToolKit.min.js"></script>
+    <script type="text/javascript" src="/static/JSARToolKit.min.js"></script>
 
     <script>
 
@@ -92,7 +91,7 @@
 
         // QR Code
         var qr_code = $('#qr_code img')[0];
-        qr_code.setAttribute('src', "/img/" + img + "_qr.png");
+        qr_code.setAttribute('src', "/static/item_img/" + img + "_qr.png");
 
         $('#thresholdInput').bind('input', function () {
             threshold = $(this).val();
@@ -298,7 +297,7 @@
                         var images = [];
                           for( var i = 0; i < 6; i++ ) {
 
-                            var image_path = '/img/' + img + '_';
+                            var image_path = '/static/item_img/' + img + '_';
 
                             if (i == front_index) {
                                 image_path += 'front_upside_down.png';

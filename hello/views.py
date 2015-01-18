@@ -16,7 +16,7 @@ def index(request):
         form = IndexForm(request.POST)
         if form.is_valid():
             url = form.cleaned_data['amazon_item_url']
-            marker_size = form.cleaned_data['marker_size'] * 10
+            marker_size = int(form.cleaned_data['marker_size']) * 10
             width, depth, height = item_info.main(url)
             img_name = hashlib.md5(url.encode('utf-8')).hexdigest()
             redirect_url = '/ar/?msize={0}&img={1}&width={2}&height={3}&depth={4}'.format(marker_size, img_name, width, height, depth)

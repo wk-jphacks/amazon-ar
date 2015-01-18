@@ -5,7 +5,6 @@
 __author__ = 'www.kentaro.wada@gmail.com (Kentaro Wada)'
 
 
-from __future__ import print_function
 import sys;
 sys.path.insert(0, 'libs')
 

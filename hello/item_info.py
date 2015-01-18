@@ -130,14 +130,16 @@ def main(url):
     size_info = item_info.predict_correct_size_info()
 
     # save imgs
-    img_nm = hashlib.md5(url).hexdigest()
+    img_nm = hashlib.md5(url.encode('utf-8')).hexdigest()
     fpath = os.path.dirname(os.path.abspath(__file__))
     imsave(fpath + '/item_img/{0}_front.png'.format(img_nm), front)
     front_upside_down = front[::-1, :].copy()
     imsave(fpath + '/item_img/{0}_front_upside_down.png'.format(img_nm), front_upside_down)
     imsave(fpath + '/item_img/{0}_side.png'.format(img_nm), side)
-    with open(fpath + '/item_img/{0}_size.csv'.format(img_nm), 'w') as f:
-        f.write(','.join(map(str, size_info)))
+    # with open(fpath + '/item_img/{0}_size.csv'.format(img_nm), 'w') as f:
+    #     f.write(','.join(map(str, size_info)))
+
+    return size_info
 
 
 if __name__ == '__main__':

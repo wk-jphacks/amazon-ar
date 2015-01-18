@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Amazon - AR</title>
+    <meta charset="UTF-8"/>
+
+    <link href='http://fonts.googleapis.com/css?family=Fauna+One' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="/static/style.css">
+
+    <!--load helper libraries-->
+    <script type="text/javascript" src="/static/jquery-2.0.2.min.js"></script>
+    <script type="text/javascript" src="/static/purl.js"></script>
+
+    <!--load 3D libraries-->
+    <script type="text/javascript" src="/static/three.min.js"></script>
+    <script type="text/javascript" src="/static/Detector.js"></script>
+    <script type="text/javascript" src="/static/stats.min.js"></script>
+
+    <!--load AR library-->
+    <script type="text/javascript" src="/static/JSARToolKit.min.js"></script>
+
+    <script>
+
+    var DEBUG = true;  //for JSARToolKit built-in debugging info
+    var threshold = 180;
+
+    // get data from url parameter
+    var url = purl();
+    var img = url.param('img');
+    var height = parseFloat(url.param('height'));
+    var width = parseFloat(url.param('width'));
+    var depth = parseFloat(url.param('depth'));
+    var markerSize = parseInt(url.param('msize'));
+
+    function checkWebGl() {
+        if (!Detector.webgl) {
+            $('div').remove();
+            Detector.addGetWebGLMessage();
+            throw new Error('Your browser does not seem to support WebGL');
+        }
+    }
+
+    // From http://www.html5rocks.com/en/tutorials/webgl/jsartoolkit_webrtc/
+    // I'm going to use a glMatrix-style matrix as an intermediary.
+    // So the first step is to create a function to convert a glMatrix matrix into a Three.js Matrix4.
+    THREE.Matrix4.prototype.setFromArray = function (m) {
+        return this.set(
+            m[0], m[4], m[8], m[12],
+            m[1], m[5], m[9], m[13],
+            m[2], m[6], m[10], m[14],
+            m[3], m[7], m[11], m[15]
+        );
+    };
+
+    // From http://www.html5rocks.com/en/tutorials/webgl/jsartoolkit_webrtc/
+    function copyMarkerMatrix(arMat, glMat) {
+        glMat[0] = arMat.m00;
+        glMat[1] = -arMat.m10;
+        glMat[2] = arMat.m20;
+        glMat[3] = 0;
+        glMat[4] = arMat.m01;
+        glMat[5] = -arMat.m11;
+        glMat[6] = arMat.m21;
+        glMat[7] = 0;
+        glMat[8] = -arMat.m02;
+        glMat[9] = arMat.m12;
+        glMat[10] = -arMat.m22;
+        glMat[11] = 0;
+        glMat[12] = arMat.m03;
+        glMat[13] = -arMat.m13;
+        glMat[14] = arMat.m23;
+        glMat[15] = 1;
+    }
+
+    function showChildren(object3d, visible) {
+        var children = object3d.children;
+        var i, len;
+        for (i = 0, len = children.length; i < len; i++) {
+            if (children[i] instanceof THREE.Mesh) {
+                children[i].visible = visible;
+            }
+        }
+    }
+
+    $(document).ready(function () {
+
+        //check for WebGL
+        checkWebGl();
+
+        console.log('Document is ready.');
+
+        // QR Code
+        var qr_code = $('#qr_code img')[0];
+        qr_code.setAttribute('src', "/static/item_img/" + img + "_qr.png");
+
+        $('#thresholdInput').bind('input', function () {
+            threshold = $(this).val();
+            console.log('threshold = ' + threshold);
+        });
+
+        var canvas = $('#mainCanvas')[0];
+        var canvasWidth = canvas.width;
+        var canvasHeight = canvas.height;
+
+        //===================================================
+        // PREPARE VIDEO
+        //===================================================
+
+        //stream to video element
+        var video = $('#mainVideo')[0];
+        video.width = 640;
+        video.height = 480;
+        video.loop = true;
+        video.autoplay = true;
+        video.style.display = 'none';
+        video.controls = true;
+        var getUserMedia = function(t, onsuccess, onerror) {
+          if (navigator.getUserMedia) {
+            return navigator.getUserMedia(t, onsuccess, onerror);
+          } else if (navigator.webkitGetUserMedia) {
+            return navigator.webkitGetUserMedia(t, onsuccess, onerror);
+          } else if (navigator.mozGetUserMedia) {
+            return navigator.mozGetUserMedia(t, onsuccess, onerror);
+          } else if (navigator.msGetUserMedia) {
+            return navigator.msGetUserMedia(t, onsuccess, onerror);
+          } else {
+            onerror(new Error("No getUserMedia implementation found."));
+          }
+        };
+
+        var URL = window.URL || window.webkitURL;
+        var createObjectURL = URL.createObjectURL || webkitURL.createObjectURL;
+        if (!createObjectURL) {
+          throw new Error("URL.createObjectURL not found.");
+        }
+
+        getUserMedia({'video': true},
+          function(stream) {
+            var url = createObjectURL(stream);
+            video.src = url;
+          },
+          function(error) {
+            alert("Couldn't access webcam.");
+          }
+        );
+
+
+
+        var source;
+        source = video;
+
+        //===================================================
+        // INIT JSARTOOLKIT
+        //===================================================
+        // Most of the codes below are from http://www.html5rocks.com/en/tutorials/webgl/jsartoolkit_webrtc/
+        // Slight modifications are done to ensure that it works in this demo
+
+        // Create a RGB raster object for the 2D canvas.
+        // JSARToolKit uses raster objects to read image data.
+        // Note that you need to set canvas.changed = true on every frame.
+        var raster = new NyARRgbRaster_Canvas2D(canvas);
+
+        // FLARParam is the thing used by FLARToolKit to set camera parameters.
+        // Here we create a FLARParam for images with canvasWidth*canvasHeight pixel dimensions.
+        // NOTE: THESE DIMENSIONS MUST BE THE SAME SIZE AS THE RASTER, OTHERWISE WILL GET AN "Uncaught Object" ERROR
+        var param = new FLARParam(canvasWidth, canvasHeight);
+
+        // The FLARMultiIdMarkerDetector is the actual detection engine for marker detection.
+        // It detects multiple ID markers. ID markers are special markers that encode a number.
+        var detector = new FLARMultiIdMarkerDetector(param, markerSize);
+
+        // For tracking video set continue mode to true. In continue mode, the detector
+        // tracks markers across multiple frames.
+        detector.setContinueMode(true);
+
+        // Copy the camera perspective matrix from the FLARParam to the WebGL library camera matrix.
+        // The second and third parameters determine the zNear and zFar planes for the perspective matrix.
+        // var tmpGlMatCam = new Float32Array(16);
+        // param.copyCameraMatrix(tmpGlMatCam, 10, 10000);
+
+        //===================================================
+        // INIT THREE.JS
+        //===================================================
+
+        var renderer = new THREE.WebGLRenderer({
+            antialias : true
+        });
+        renderer.setSize(canvasWidth, canvasHeight);
+        var $threejsContainerElem = $('#threejs-container');
+        $threejsContainerElem.append(renderer.domElement);
+
+        // create the scene
+        var scene = new THREE.Scene();
+
+        // Create a camera and a marker root object for your Three.js scene.
+        var camera = new THREE.Camera();
+
+        // glMatrix matrices are flat arrays.
+        var tmp = new Float32Array(16);
+
+        // Next we need to make the Three.js camera use the FLARParam matrix.
+        param.copyCameraMatrix(tmp, 10, 10000);
+        camera.projectionMatrix.setFromArray(tmp);
+
+        // Create scene and quad for the video.
+        // NOTE: must use <canvas> as the texture, not <video>, otherwise there will be a 1-frame lag
+        var videoTex = new THREE.Texture(canvas);
+        var geometry = new THREE.PlaneGeometry(2, 2);
+        var material = new THREE.MeshBasicMaterial({
+            map : videoTex,
+            depthTest : false,
+            depthWrite : false
+        });
+        var plane = new THREE.Mesh(geometry, material);
+        var videoScene = new THREE.Scene();
+        var videoCam = new THREE.Camera();
+        videoScene.add(plane);
+        videoScene.add(videoCam);
+
+        //===================================================
+        // STATS
+        //===================================================
+
+        //create a stats monitor
+        var stats = new Stats();
+        $threejsContainerElem.append(stats.domElement);
+
+        //===================================================
+        // LOOP
+        //===================================================
+
+        // Create a NyARTransMatResult object for getting the marker translation matrices.
+        var resultMat = new NyARTransMatResult();
+
+        var markerRoots = {};
+        var markers = {};
+
+        var ctx = canvas.getContext('2d');
+
+        // On every frame do the following:
+        function loop() {
+
+            if (source instanceof HTMLImageElement || (source instanceof HTMLVideoElement && source.readyState === source.HAVE_ENOUGH_DATA)) {
+
+                // Draw the video frame to the canvas.
+                ctx.drawImage(source, 0, 0, canvasWidth, canvasHeight);
+
+                // Tell JSARToolKit that the canvas has changed.
+                canvas.changed = true;
+
+                // Update the video texture.
+                videoTex.needsUpdate = true;
+
+                // hide all markers first
+                Object.keys(markerRoots).forEach(function (key) {
+                    showChildren(markerRoots[key], false);
+                });
+
+                // Do marker detection by using the detector object on the raster object.
+                // The threshold parameter determines the threshold value
+                // for turning the video frame into a 1-bit black-and-white image.
+                var markerCount = detector.detectMarkerLite(raster, threshold);
+
+                // Go through the detected markers and get their IDs and transformation matrices.
+                var i, j;
+                for (i = 0; i < markerCount; i++) {
+
+                    // Get the ID marker data for the current marker.
+                    // ID markers are special kind of markers that encode a number.
+                    // The bytes for the number are in the ID marker data.
+                    var id = detector.getIdMarkerData(i);
+
+                    // Read bytes from the id packet.
+                    var currId = -1;
+                    // This code handles only 32-bit numbers or shorter.
+                    if (id.packetLength <= 4) {
+                        currId = 0;
+                        for (j = 0; j < id.packetLength; j++) {
+                            currId = (currId << 8) | id.getPacketData(j);
+                        }
+                    }
+
+                    // If this is a new id, let's start tracking it.
+                    if (typeof markers[currId] === 'undefined') {
+
+                        //create new object for the marker
+                        markers[currId] = {};
+
+                        //create a new Three.js object as marker root
+                        var markerRoot = new THREE.Object3D();
+                        markerRoot.matrixAutoUpdate = false;
+                        markerRoots[currId] = markerRoot;
+
+                        var front_index = 3;
+
+                        // for six images
+                        var images = [];
+                          for( var i = 0; i < 6; i++ ) {
+
+                            var image_path = '/static/item_img/' + img + '_';
+
+                            if (i == front_index) {
+                                image_path += 'front_upside_down.png';
+                            } else {
+                                image_path += 'side.png';
+                            }
+
+                            images[i] = new THREE.MeshBasicMaterial( {
+                                map:THREE.ImageUtils.loadTexture(image_path),
+                                side: THREE.BackSide,
+                                wireframe: false
+                            } );
+                          }
+
+                        var material = new THREE.MeshFaceMaterial(images);
+
+                        // Add the marker models and suchlike into your marker root object.
+                        height_mm = height * 10;
+                        width_mm = width * 10;
+                        depth_mm = depth * 10;
+                        var geometry = new THREE.CubeGeometry(width_mm, depth_mm, height_mm);
+
+                        var cube = new THREE.Mesh(geometry, material);
+                        cube.position.z = -height_mm/2;
+                        markerRoot.add(cube);
+
+                        // Add the marker root to your scene.
+                        scene.add(markerRoot);
+                    }
+
+                    // Get the transformation matrix for the detected marker.
+                    detector.getTransformMatrix(i, resultMat);
+
+                    // Copy the marker matrix to the tmp matrix.
+                    copyMarkerMatrix(resultMat, tmp);
+
+                    // Copy the marker matrix over to your marker root object.
+                    markerRoots[currId].matrix.setFromArray(tmp);
+                    markerRoots[currId].matrixWorldNeedsUpdate = true;
+
+                    // show the children of this marker
+                    showChildren(markerRoots[currId], true);
+                }
+
+                //render
+                renderer.autoClear = false;
+                renderer.clear();
+                renderer.render(videoScene, videoCam);
+                renderer.render(scene, camera);
+
+                //update stats
+                stats.update();
+            }
+            requestAnimationFrame(loop);
+        }
+        loop();
+    });
+    </script>
+</head>
+<body>
+    <h2>Amazon - AR</h2>
+    <div class="container" id="threejs-container">
+      <div class="caption">Life with AR</div>
+      <video id="mainVideo" width="640" height="480" autoplay="autoplay" muted="true"></video>
+    </div>
+    <div class="container" id="qr_code">
+      <div class="caption">QR code</div>
+      <img style="display:block;margin-left:auto;margin-right:auto;"/>
+    </div>
+    <div class="container" id="canvas-container">
+      <div class="caption">Real</div>
+      <canvas id="mainCanvas" width="640" height="480"></canvas>
+    </div>
+    <div class="caption" style="margin: 2em auto;">
+      Threshold (0-255):
+      <input id="thresholdInput" type="range" min="0" max="255" style="vertical-align:middle;">
+    </div>
+    <div class="container" id="debugCanvas-container">
+      <div class="caption">Debug</div>
+      <canvas id="debugCanvas" width="640" height="480"></canvas>
+    </div>
+</body>
+</html>

@@ -61,9 +61,16 @@ class ItemInfo(object):
             # scrape size with shared way
             if len(elms) == 0:
                 return None
-            size_texts = [elm.get_text() for elm in elms if u'cm' in elm.get_text()]
+            # get size_texts
+            size_texts = []
+            size_marker_candidates = [u'cm', u'㎝']
+            for elm in elms:
+                for scm in size_marker_candidates:
+                    if scm in elm.get_text():
+                        size_texts.append(elm.get_text())
             if len(size_texts) == 0:
                 return None
+            # get size with number
             size_text = size_texts[0]
             if u'×' in size_text:
                 size_text_splitted = size_text.split(u'×')
@@ -73,7 +80,9 @@ class ItemInfo(object):
                 return None
             size_info = []
             for spl in size_text_splitted:
-                size_info.append(float(re.findall(r'\d+\.?\d*', spl)[0]))
+                size_nums = re.findall(r'\d+\.?\d*', spl)
+                if len(size_nums) != 0:
+                    size_info.append(float(size_nums[0]))
             # for just there is radius
             if len(size_info) == 2:
                 size_info.append(size_info[0])

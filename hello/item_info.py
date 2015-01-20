@@ -98,6 +98,7 @@ class ItemInfo(object):
         front = only_object.only_object(img)
         # other side color
         color = front.mean(axis=0).mean(axis=0)
+        color[3] = 255  # color is not transparent
         side_img = np.zeros_like(front)
         side_img[:] = color
         # save img
@@ -114,6 +115,8 @@ class ItemInfo(object):
             self.get_size_info()
         height, width, _ = self.front_img.shape
         img_scaled_area = 1. * height / width * width
+        if self.size_info is None:
+            return None
         s1, s2, s3 = self.size_info
         s1, s2, s3 = 1., 1.*s2/s1, 1.*s3/s1
         scaled_areas = np.array([s1*s2, s2*s3, s3*s1])

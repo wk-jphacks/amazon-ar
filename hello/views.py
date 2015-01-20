@@ -17,7 +17,11 @@ def index(request):
         if form.is_valid():
             url = form.cleaned_data['amazon_item_url']
             marker_size = int(float(form.cleaned_data['marker_size']) * 10)
-            width, depth, height = item_info.main(url)
+            size_info = item_info.main(url)
+            if size_info is not None:
+                width, depth, height = item_info.main(url)
+            else:
+                width, depth, height = 0, 0, 0
             img_name = hashlib.md5(url.encode('utf-8')).hexdigest()
             redirect_url = '/ar/?msize={0}&img={1}&width={2}&height={3}&depth={4}'.format(marker_size, img_name, width, height, depth)
             img_qrcode = qrcode.make('http://{0}{1}'.format(request.META.get('HTTP_HOST', ''), redirect_url))

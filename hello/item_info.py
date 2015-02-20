@@ -5,7 +5,7 @@
 __author__ = 'www.kentaro.wada@gmail.com (Kentaro Wada)'
 
 
-import sys;
+import sys
 sys.path.insert(0, 'libs')
 
 import os
@@ -137,7 +137,6 @@ class ItemInfo(object):
 
 def main(url):
     item_info = ItemInfo(url=url)
-    size_info = item_info.get_size_info()
     front, side = item_info.get_item_img()
     size_info = item_info.predict_correct_size_info()
 
@@ -155,5 +154,5 @@ def main(url):
 
 
 if __name__ == '__main__':
-    url = 'http://www.amazon.co.jp/%E4%B8%8D%E4%BA%8C%E8%B2%BF%E6%98%93-%E3%83%95%E3%83%AA%E3%83%BC%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9-FBC960-%E3%82%AB%E3%83%A9%E3%83%BC%E3%83%9C%E3%83%83%E3%82%AF%E3%82%B9-57093/dp/B00163JL6E/ref=sr_1_3?s=home&ie=UTF8&qid=1418455551&sr=1-3&keywords=%E6%A3%9A'
+    url = sys.argv[1]
     main(url)

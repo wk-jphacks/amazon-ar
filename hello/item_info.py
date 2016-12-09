@@ -35,9 +35,12 @@ class ItemInfo(object):
         self.get_soup(timeout=30)
 
     def get_soup(self, timeout):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.90 Safari/537.36'  # NOQA
+        }
         t_start = time.time()
         while time.time() - t_start < timeout:
-            r = requests.get(self.url)
+            r = requests.get(self.url, headers=headers)
             if r.status_code == 200:
                 break
         if r.status_code != 200:
